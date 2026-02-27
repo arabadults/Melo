@@ -94,6 +94,28 @@
             line-height: 1.2;
         }
 
+        /* مؤقت اعادة الفتح */
+        .reopen-timer {
+            background: #222;
+            padding: 15px;
+            border-radius: 60px;
+            margin: 10px 0 20px;
+            border: 2px solid var(--tg-color);
+        }
+
+        .reopen-text {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .reopen-number {
+            color: var(--tg-color);
+            font-size: 2rem;
+            font-weight: 900;
+            display: inline-block;
+            min-width: 60px;
+        }
+
         .timer-header {
             background: #222;
             padding: 15px;
@@ -391,11 +413,17 @@
             <div class="lock-icon">🔒</div>
             <div class="sub-header">محتوى حصري VIP</div>
             
+            <!-- مؤقت اعادة الفتح (5 دقائق) -->
+            <div class="reopen-timer" id="reopenTimer">
+                <div class="reopen-text">
+                    <span>⏰ سيعود المحتوى خلال </span>
+                    <span class="reopen-number" id="reopenCountdown">5:00</span>
+                </div>
+            </div>
+            
             <a href="https://t.me/J3X5J3" class="timer-header" id="timerHeader" target="_blank">
                 <div class="timer-text">
-                    <span>⏳ يتم الاغلاق تلقائياً خلال </span>
-                    <span class="timer-number" id="countdown">20</span>
-                    <span> ثانية</span>
+                    <span>⏳ تم الاغلاق بعد 60 ثانية</span>
                 </div>
             </a>
 
@@ -501,132 +529,120 @@
 </footer>
 
 <script>
-    // ========== نظام الاغلاق الدوري المتقدم ==========
+    // ========== نظام المؤقتين ==========
     
     // ========== اعدادات الوقت ==========
-    // للتجربة: 20 ثانية مشاهدة
-    // للنسخة النهائية: غير الرقم إلى 300 (5 دقائق) أو 60 (دقيقة)
-    const FREE_VIEW_TIME = 20; // 20 ثانية للتجربة
+    const CONTENT_VIEW_TIME = 10; // 60 ثانية مشاهدة للمحتوى
+    const LOCK_SCREEN_TIME = 4 * 5; // 5 دقائق اغلاق (بالثواني)
     
-    // ========== مفتاح التخزين ==========
-    const SESSION_KEY = 'session_timer_start';
+    // ========== مفاتيح التخزين ==========
+    const SESSION_KEY = 'content_session_start';
+    const LOCK_KEY = 'lock_screen_active';
     
     // ========== العناصر المهمة ==========
     let overlay = document.getElementById('siteOverlay');
-    let countdownElement = document.getElementById('countdown');
-    let timerHeader = document.getElementById('timerHeader');
+    let reopenElement = document.getElementById('reopenCountdown');
+    let reopenTimer = document.getElementById('reopenTimer');
     
-    // ========== دالة للحصول على وقت بدء الجلسة ==========
-    function getSessionStartTime() {
+    // ========== دوال مساعدة ==========
+    function getSessionStart() {
         const stored = sessionStorage.getItem(SESSION_KEY);
-        if (stored) {
-            return parseInt(stored);
-        }
-        return null;
+        return stored ? parseInt(stored) : null;
     }
     
-    // ========== دالة لحفظ وقت بدء الجلسة ==========
-    function setSessionStartTime() {
+    function setSessionStart() {
         sessionStorage.setItem(SESSION_KEY, Date.now().toString());
     }
     
-    // ========== دالة لمسح الجلسة ==========
     function clearSession() {
         sessionStorage.removeItem(SESSION_KEY);
     }
     
-    // ========== دالة لحساب الوقت المتبقي ==========
-    function getRemainingTime() {
-        const startTime = getSessionStartTime();
-        if (!startTime) return FREE_VIEW_TIME;
-        
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const remaining = FREE_VIEW_TIME - elapsed;
-        
-        return Math.max(0, remaining);
+    function isLockScreenActive() {
+        return sessionStorage.getItem(LOCK_KEY) === 'true';
     }
     
-    // ========== دالة لبدء جلسة جديدة ==========
-    function startNewSession() {
-        setSessionStartTime();
+    function setLockScreen(active) {
+        sessionStorage.setItem(LOCK_KEY, active ? 'true' : 'false');
+    }
+    
+    function getRemainingContentTime() {
+        const start = getSessionStart();
+        if (!start) return CONTENT_VIEW_TIME;
         
-        let timeLeft = FREE_VIEW_TIME;
+        const elapsed = Math.floor((Date.now() - start) / 1000);
+        return Math.max(0, CONTENT_VIEW_TIME - elapsed);
+    }
+    
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+    
+    // ========== التحقق من حالة الشاشة ==========
+    if (isLockScreenActive()) {
+        // نحن في وضع الاغلاق (صفحة الاشتراك)
+        console.log('🔒 وضع الاغلاق نشط');
+        overlay.classList.add('show');
         
-        // تحديث العداد كل ثانية
-        let countdownInterval = setInterval(function() {
-            const remaining = getRemainingTime();
+        // ايقاف الفيديوهات
+        document.querySelectorAll('video').forEach(v => {
+            v.pause();
+            v.removeAttribute('controls');
+        });
+        
+        // نبدأ عد تنازلي لـ 5 دقائق
+        let lockTimeLeft = LOCK_SCREEN_TIME;
+        
+        let lockInterval = setInterval(function() {
+            lockTimeLeft--;
             
-            if (countdownElement) {
-                countdownElement.textContent = remaining;
+            if (reopenElement) {
+                reopenElement.textContent = formatTime(lockTimeLeft);
             }
             
-            if (remaining <= 0) {
-                clearInterval(countdownInterval);
+            if (lockTimeLeft <= 0) {
+                clearInterval(lockInterval);
                 
-                // اظهار الستارة
-                overlay.classList.add('show');
+                // انتهت مدة الـ 5 دقائق
+                console.log('✅ انتهت مدة الاغلاق - اعادة تشغيل المحتوى');
                 
-                // ايقاف جميع الفيديوهات
-                document.querySelectorAll('video').forEach(video => {
-                    video.pause();
-                    video.removeAttribute('controls');
-                });
+                // نلغي حالة الاغلاق
+                setLockScreen(false);
                 
-                // تحديث نص العداد
-                if (timerHeader) {
-                    const timerDiv = timerHeader.querySelector('.timer-text');
-                    if (timerDiv) {
-                        timerDiv.innerHTML = '🔒 تم الاغلاق - أعد تحميل الصفحة لبدء جلسة جديدة';
-                    }
-                }
+                // نمسح الجلسة السابقة
+                clearSession();
                 
-                // ملاحظة: لا نحذف الجلسة هنا حتى تبقى الستارة ظاهرة
+                // نخفي الستارة
+                overlay.classList.remove('show');
+                
+                // نعيد تشغيل الصفحة
+                location.reload();
             }
         }, 1000);
-    }
-    
-    // ========== التحقق من وجود جلسة نشطة ==========
-    const sessionStart = getSessionStartTime();
-    
-    if (sessionStart) {
-        // هناك جلسة سابقة - نحسب الوقت المتبقي
-        const remaining = getRemainingTime();
+        
+    } else {
+        // نحن في وضع المحتوى
+        const remaining = getRemainingContentTime();
         
         if (remaining <= 0) {
-            // انتهت الجلسة - نظهر الستارة فوراً
-            console.log('🔒 جلسة منتهية - اغلاق فوري');
+            // انتهت الـ 60 ثانية - ننتقل لوضع الاغلاق
+            console.log('🔒 انتهت مدة المشاهدة - تفعيل وضع الاغلاق');
+            
+            setLockScreen(true);
+            clearSession();
             overlay.classList.add('show');
             
-            document.querySelectorAll('video').forEach(video => {
-                video.pause();
-                video.removeAttribute('controls');
+            document.querySelectorAll('video').forEach(v => {
+                v.pause();
+                v.removeAttribute('controls');
             });
             
-            if (timerHeader) {
-                const timerDiv = timerHeader.querySelector('.timer-text');
-                if (timerDiv) {
-                    timerDiv.innerHTML = '🔒 انتهت الجلسة - أعد تحميل الصفحة لبدء جلسة جديدة';
-                }
-            }
-        } else {
-            // جلسة سارية - نبدأ العد من الوقت المتبقي
-            console.log('⏳ استكمال جلسة سابقة، الوقت المتبقي:', remaining, 'ثانية');
+            // نبدأ عد تنازلي 5 دقائق
+            let lockTimeLeft = LOCK_SCREEN_TIME;
             
-            // نعرض العداد بالوقت المتبقي
-            if (countdownElement) {
-                countdownElement.textContent = remaining;
-            }
-            
-            // نبدأ العد التنازلي من الوقت المتبقي
-            let timeLeft = remaining;
-            
-            let countdownInterval = setInterval(function() {
-                timeLeft--;
+            let lockInterval = setInterval(function() {
+                lockTimeLeft--;
                 
-                if (countdownElement) {
-                    countdownElement.textContent = timeLeft;
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                   
+   
