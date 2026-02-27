@@ -404,7 +404,7 @@
             <a href="https://t.me/J3X5J3" class="timer-header" id="timerHeader" target="_blank">
                 <div class="timer-text">
                     <span>⏳ يتم الاغلاق تلقائياً خلال </span>
-                    <span class="timer-number" id="countdown">5</span>
+                    <span class="timer-number" id="countdown">30</span>
                     <span> ثانية</span>
                 </div>
             </a>
@@ -519,85 +519,107 @@
 </footer>
 
 <script>
+    // ========== نظام تعقب IP المتقدم ==========
+    
     // ========== اعدادات الوقت ==========
-    // للنسخة النهائية: غير الرقم 5 الى 60
-    const LOCK_TIME_SECONDS = 30; // <<< غيّر هذا الرقم للتحكم بالوقت
+    const FREE_VIEW_TIME = 30; // 30 ثانية مشاهدة مجانية
+    const BLOCK_DURATION = 5 * 60 * 1000; // 5 دقائق حظر (بالمللي ثانية)
     
-    // ========== التحقق من الحالة المخزنة ==========
-    const STORAGE_KEY = 'site_locked_status';
+    // ========== مفتاح التخزين ==========
+    const STORAGE_KEY = 'visitor_ip_tracker';
     
-    function setSiteLocked() {
-        localStorage.setItem(STORAGE_KEY, 'locked_' + new Date().getTime());
+    // ========== الحصول على بصمة فريدة للزائر (بدل IP) ==========
+    function getVisitorFingerprint() {
+        // نستخدم عدة عوامل لإنشاء بصمة فريدة
+        const screen = `${screen.width}x${screen.height}x${screen.colorDepth}`;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const language = navigator.language;
+        const platform = navigator.platform;
+        const userAgent = navigator.userAgent.substring(0, 50); // جزء من الـ UA
+        
+        // إنشاء بصمة
+        const fingerprint = `${screen}|${timezone}|${language}|${platform}|${userAgent}`;
+        
+        // تشفير بسيط (Base64)
+        return btoa(fingerprint);
     }
     
-    function isSiteLocked() {
-        return localStorage.getItem(STORAGE_KEY) !== null;
+    // ========== حفظ حالة الزائر ==========
+    function setVisitorBlocked() {
+        const fingerprint = getVisitorFingerprint();
+        const blockData = {
+            fingerprint: fingerprint,
+            blockedUntil: Date.now() + BLOCK_DURATION // وقت انتهاء الحظر
+        };
+        
+        // تخزين في LocalStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(blockData));
+        
+        console.log('⛔ تم حظر هذا الزائر حتى:', new Date(blockData.blockedUntil).toLocaleTimeString());
     }
     
+    // ========== التحقق من حالة الزائر ==========
+    function isVisitorBlocked() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        
+        if (!stored) {
+            return false; // لا يوجد بيانات = زائر جديد
+        }
+        
+        try {
+            const blockData = JSON.parse(stored);
+            const currentFingerprint = getVisitorFingerprint();
+            
+            // التحقق من تطابق البصمة
+            if (blockData.fingerprint !== currentFingerprint) {
+                return false; // بصمة مختلفة (جهاز مختلف)
+            }
+            
+            // التحقق من وقت انتهاء الحظر
+            if (Date.now() > blockData.blockedUntil) {
+                // انتهت مدة الحظر - نحذف البيانات
+                localStorage.removeItem(STORAGE_KEY);
+                console.log('✅ انتهت مدة الحظر - زائر جديد');
+                return false;
+            }
+            
+            // لا يزال محظوراً
+            console.log('⏳ لا يزال محظوراً، الوقت المتبقي:', 
+                Math.round((blockData.blockedUntil - Date.now()) / 1000), 'ثانية');
+            return true;
+            
+        } catch (e) {
+            console.error('خطأ في قراءة البيانات', e);
+            return false;
+        }
+    }
+    
+    // ========== العناصر المهمة ==========
     let overlay = document.getElementById('siteOverlay');
     let countdownElement = document.getElementById('countdown');
     let timerHeader = document.getElementById('timerHeader');
     
-    // ========== اذا كان الموقع مغلق مسبقاً ==========
-    if (isSiteLocked()) {
+    // ========== التحقق من الحظر المسبق ==========
+    if (isVisitorBlocked()) {
+        console.log('🚫 هذا الزائر محظور لمدة 5 دقائق');
+        
+        // اغلاق الموقع فوراً
         overlay.classList.add('show');
         
+        // ايقاف جميع الفيديوهات
         document.querySelectorAll('video').forEach(video => {
             video.pause();
             video.removeAttribute('controls');
         });
         
+        // تغيير نص العداد
         if (timerHeader) {
-            timerHeader.innerHTML = '<div class="timer-text">🔒 المحتوى مغلق - اضغط للاشتراك</div>';
+            const timerDiv = timerHeader.querySelector('.timer-text');
+            if (timerDiv) {
+                timerDiv.innerHTML = '🔒 المحتوى مغلق مؤقتاً - انتظر 5 دقائق أو اشترك الآن';
+            }
         }
     } 
     else {
-        // ========== الموقع مفتوح - نبدأ العد التنازلي ==========
-        let timeLeft = LOCK_TIME_SECONDS;
-        
-        let countdownInterval = setInterval(function() {
-            timeLeft--;
-            
-            if (countdownElement) {
-                countdownElement.textContent = timeLeft;
-            }
-            
-            if (timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                setSiteLocked();
-                overlay.classList.add('show');
-                
-                document.querySelectorAll('video').forEach(video => {
-                    video.pause();
-                    video.removeAttribute('controls');
-                });
-                
-                if (timerHeader) {
-                    timerHeader.innerHTML = '<div class="timer-text">🔒 تم الاغلاق - اضغط للاشتراك</div>';
-                }
-            }
-        }, 1000);
-    }
-    
-    // ========== منع تشغيل الفيديو بعد الاغلاق ==========
-    document.querySelectorAll('video').forEach(video => {
-        video.addEventListener('play', function(e) {
-            if (overlay.classList.contains('show') || isSiteLocked()) {
-                this.pause();
-            }
-        });
-    });
-    
-    // ========== التحقق عند تحميل الصفحة ==========
-    window.addEventListener('load', function() {
-        if (isSiteLocked()) {
-            overlay.classList.add('show');
-        }
-    });
-    
-    console.log('✅ نظام الحماية مفعل - وقت الاغلاق:', LOCK_TIME_SECONDS, 'ثانية');
-    console.log('✅ جميع الروابط تؤدي إلى: https://t.me/J3X5J3');
-</script>
-
-</body>
-</html>
+        // ========== زائر جديد - نبدأ العد التنازلي ==========
+        console.log('👤 زائر
