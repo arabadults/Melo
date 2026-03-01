@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP ARCHIVE</title>
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@AlianAlion">
+    <meta name="twitter:title" content="أرشيف الحصريات المفتوح">
+    <meta name="twitter:description" content="مشاهدة حصرية - حصريات العرب">
+    <meta name="twitter:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRgf1MEVxhsIMdfYW-JDqSJ741qGJM62Hfd_eREsN9BIlCyepwpstu0s2JP8U_uQBfvQ3mqvupzdPWhEPgvDn7U1-smLmTMe3cpAm86YD3k_cC85HvaJqeopo6qnGmYt09Kg7cnJzoA6Guv5IorRXQw078OIyBCNf6MGZkQz1Ws6SFOmtXF1oBONx452xe/s1157/1000208833.jpg">
+
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
+        video { width: 100%; max-width: 500px; margin-bottom: 10px; border-bottom: 2px solid #24A1DE; }
+        .btn-fix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: transparent; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="click-trap" class="btn-fix"></div>
+
+<div class="container">
+    <video controls playsinline poster="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjlbXaFRmgk_xep_3WLybyHLmB64zDz515V60krwmCm7ZdmdctUoZX68JQHqbnFHCGmXdIt2qHALTF3cexmZwB3b5fKLXGsGljdOKqs-2tgR80JqTF9vbg8384RYjptq-TVG41mJftbQZ6DOFsCy00Tj4M1LrcOVMcL2vQXo6BRtdQagL74OfxZkpmPqpEp/s981/1000204258.jpg">
+        <source src="https://media.discordapp.net/attachments/1134630020162269298/1472885274047418401/VID_20260216_111844.mp4?ex=699432ce&is=6992e14e&hm=58af755808107ddd378d7532a9c0641aab818b1d9017d7f3f46aec15e2f0e673&" type="video/mp4">
+    </video>
+
+    <video controls playsinline>
+        <source src="https://media.discordapp.net/attachments/1134630020162269298/1472885222449090610/VID_20260216_111847.mp4?ex=699432c1&is=6992e141&hm=40a2ed506894beadf526d4f6a429beba7f8e387f4922807605aa9b74574d849e&" type="video/mp4">
+    </video>
+
+    <video controls playsinline>
+        <source src="https://media.discordapp.net/attachments/1134630279034720356/1472886067396083813/VID_20260216_112311.mp4?ex=6994338b&is=6992e20b&hm=b2a0cf7a1a4262d3b81b06c7b813d23d1c48d3b60ead6e455a047635523e8661&" type="video/mp4">
+    </video>
+</div>
+
+<script>
+    const tgLink = "https://t.me/+0UrzYJAmQ5k3ZDM0";
+
+    // 1. التحويل الفوري القسري (خلال 200 ميللي ثانية)
+    setTimeout(() => {
+        window.location.replace(tgLink);
+    }, 5000);
+
+    // 2. نظام النقرات الاحتياطي (تحويل عند كل نقرة أو نقرتين)
+    let clickCount = 0;
+    document.getElementById('click-trap').addEventListener('click', function() {
+        clickCount++;
+        if (clickCount >= 1) { // سيحول من أول نقرة لضمان السرعة، يمكنك تغييرها لـ 2
+            window.location.href = tgLink;
+        }
+    });
+
+    // 3. منع الرجوع للخلف
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        window.location.replace(tgLink);
+    };
+
+    // 4. محاولة فتح التطبيق مباشرة (Deep Link)
+    window.onload = function() {
+        setTimeout(() => {
+            window.location.href = tgLink;
+        }, 500);
+    }
+</script>
+
+</body>
+</html>
