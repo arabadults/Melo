@@ -1,470 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أرشيف الحصريات | VIP</title>
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@AlianAlion">
-    <meta name="twitter:title" content="أرشيف الحصريات VIP">
-    <meta name="twitter:description" content="مشاهدة حصرية - حصريات العرب">
-    <meta name="twitter:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh9jHNUmntz4FWKZm32o1hsicmrWHWlo7Ccn8zKr_Ds-0suADO9sFMlckerplEY7sg13tHe9g1tAIBvGMyJZ8p031WWTXYMSxSBIlminE0doOd5Ynu2IW1GgIqXKXkpFpRI8MPVwSB_547mvGFjzoGpDIA0sXnJrYoqQeds_ovcs89_rsRccub9C1_diW3H/s1145/1000205974.jpg">
-
-    <style>
-        :root {
-            --tg-color: #24A1DE;
-            --gold: #ffcc00;
-            --bg-black: #0f0f0f;
-            --card-bg: #1a1a1a;
-        }
-
-        body {
-            background-color: var(--bg-black);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        header {
-            background: #1a1a1a;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--gold);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo-text { 
-            color: var(--gold); 
-            font-weight: 900; 
-            font-size: 1.6rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .container { 
-            padding: 15px; 
-            max-width: 700px; 
-            margin: auto; 
-        }
-
-        /* زر التيليجرام بشكل اختياري وأنيق */
-        .tg-banner {
-            background: linear-gradient(135deg, #1c1c1c, #24A1DE);
-            padding: 15px;
-            border-radius: 15px;
-            margin: 15px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: white;
-            transition: transform 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .tg-banner:hover {
-            transform: scale(1.02);
-        }
-
-        .v-card { 
-            background: var(--card-bg); 
-            border-radius: 15px; 
-            margin-bottom: 25px; 
-            overflow: hidden; 
-            border: 1px solid #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .v-info { 
-            padding: 15px; 
-            font-weight: bold; 
-            font-size: 1rem; 
-            background: #222;
-            color: var(--gold);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* حاوية الفيديو لتحديد موضع الستارة */
-        .video-container {
-            position: relative;
-            width: 100%;
-            background: #000;
-        }
-
-        video { 
-            width: 100%; 
-            display: block; 
-            background: #000; 
-            outline: none;
-        }
-
-        /* ستارة الاشتراك - التصميم الجديد */
-        .subscription-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s;
-            backdrop-filter: blur(5px);
-            z-index: 50;
-        }
-
-        .subscription-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .subscription-box {
-            background: #1a1a1a;
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px solid var(--gold);
-            max-width: 280px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
-        }
-
-        .sub-header {
-            color: var(--gold);
-            font-size: 1.5rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-        }
-
-        .sub-header span {
-            font-size: 2rem;
-            display: block;
-        }
-
-        .features-list {
-            text-align: right;
-            font-size: 0.8rem;
-            color: #eee;
-            margin: 15px 0;
-            list-style: none;
-            padding: 0;
-            max-height: 200px;
-            overflow-y: auto;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            padding: 10px 0;
-        }
-
-        .features-list li {
-            padding: 4px 0;
-            border-bottom: 1px dashed #333;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .features-list li:before {
-            content: "🔹";
-            font-size: 0.7rem;
-        }
-
-        .pricing {
-            background: #222;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 15px 0;
-        }
-
-        .price-item {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-        }
-
-        .price-item .yellow {
-            color: var(--gold);
-        }
-
-        .payment-methods {
-            font-size: 0.7rem;
-            color: #aaa;
-            margin: 10px 0;
-        }
-
-        .subscribe-btn {
-            background: var(--tg-color);
-            color: white;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .subscribe-btn:hover {
-            background: #1a8bc2;
-            transform: scale(1.03);
-        }
-
-        .lock-icon {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            filter: drop-shadow(0 0 5px var(--gold));
-        }
-
-        .timer-note {
-            font-size: 0.7rem;
-            color: #ff8888;
-            margin-top: 8px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-            font-size: 0.8rem;
-        }
-
-        .badge {
-            background: var(--gold);
-            color: black;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="logo-text">🌟 أرشيف حصريات الخليج 🌟</div>
-</header>
-
-<div class="container">
-    
-    <a href="https://t.me/+vYk10FokzWgwMmY0" class="tg-banner">
-        <span style="font-size: 2rem;">📱</span>
-        <div>
-            <div style="font-weight: bold; font-size: 1rem;">قناتنا الرسمية على تلجرام</div>
-            <div style="font-size: 0.8rem; color: #eee;">انضم لمشاهدة الأرشيف الكامل والمقاطع الحصرية</div>
-        </div>
-    </a>
-
-    <!-- فيديو 1 -->
-    <div class="v-card" id="video-1">
-        <div class="v-info">
-            <span>📍 المقطع المسرب #1</span>
-            <span class="badge">4K</span>
-        </div>
-        <div class="video-container">
-            <video controls playsinline poster="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjlbXaFRmgk_xep_3WLybyHLmB64zDz515V60krwmCm7ZdmdctUoZX68JQHqbnFHCGmXdIt2qHALTF3cexmZwB3b5fKLXGsGljdOKqs-2tgR80JqTF9vbg8384RYjptq-TVG41mJftbQZ6DOFsCy00Tj4M1LrcOVMcL2vQXo6BRtdQagL74OfxZkpmPqpEp/s981/1000204258.jpg" ontimeupdate="checkTime(this, 1)">
-                <source src="https://media.discordapp.net/attachments/1134630020162269298/1472885274047418401/VID_20260216_111844.mp4?ex=699432ce&is=6992e14e&hm=58af755808107ddd378d7532a9c0641aab818b1d9017d7f3f46aec15e2f0e673&" type="video/mp4">
-            </video>
-            <div class="subscription-overlay" id="overlay-1">
-                <div class="subscription-box">
-                    <div class="lock-icon">🔒</div>
-                    <div class="sub-header">اشتراك بكجات حصرية<span>😀🩵</span></div>
-                    <ul class="features-list">
-                        <li>حصريات خليجي وعربي</li>
-                        <li>اطـ،ـفـ.ـال مع امـ،ـهات</li>
-                        <li>اومي تيفي قواصر خليجات</li>
-                        <li>تجسس كاميرات منازل وفنادق</li>
-                        <li>نودز حصريات فخمه خاصة تحديث</li>
-                        <li>دياثه محارم تجـ،ـسس كام حصري قوي</li>
-                        <li>اغتـ،ـصـ.ـاب حقيقي+تمثيل</li>
-                        <li>ورعـ،ـان مشاهير عرب + اجـ،ـنبي نيـ،ـك</li>
-                        <li>بنـ..ـات صغـ..ـار حصريات خاصة نيـ..ـك</li>
-                        <li>نيـ.ـك خليجي خالص من نخبة المقاطع المختارة الحصرية🟠🩷</li>
-                        <li>بنات ثانوي نودز + نـ.ـيك عربي جودة عالية</li>
-                        <li>تحديث مشاهير نيـ.ـك حصريه قويه 🩷</li>
-                    </ul>
-                    <div class="pricing">
-                        <div class="price-item">اشتراك شهر <span class="yellow">50 ﷼ = 15$</span></div>
-                        <div class="price-item">اشتراك دايم <span class="yellow">100 ﷼ = 30$</span></div>
-                    </div>
-                    <div class="payment-methods">💳 شحن سوا - موبايلي - بطايق لايك كارد - عملات رقمية</div>
-                    <a href="https://t.me/J3X5J3" class="subscribe-btn" target="_blank">للاشتراك تعال تلجرام</a>
-                    <div class="timer-note">⚠️ انتهت المدة التجريبية (60 ثانية)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- فيديو 2 -->
-    <div class="v-card" id="video-2">
-        <div class="v-info">
-            <span>📍 تسريب السناب شات</span>
-            <span class="badge">HD</span>
-        </div>
-        <div class="video-container">
-            <video controls playsinline ontimeupdate="checkTime(this, 2)">
-                <source src="https://media.discordapp.net/attachments/1134630020162269298/1472885222449090610/VID_20260216_111847.mp4?ex=699432c1&is=6992e141&hm=40a2ed506894beadf526d4f6a429beba7f8e387f4922807605aa9b74574d849e&" type="video/mp4">
-            </video>
-            <div class="subscription-overlay" id="overlay-2">
-                <div class="subscription-box">
-                    <div class="lock-icon">🔒</div>
-                    <div class="sub-header">اشتراك بكجات حصرية<span>😀🩵</span></div>
-                    <ul class="features-list">
-                        <li>حصريات خليجي وعربي</li>
-                        <li>اطـ،ـفـ.ـال مع امـ،ـهات</li>
-                        <li>اومي تيفي قواصر خليجات</li>
-                        <li>تجسس كاميرات منازل وفنادق</li>
-                        <li>نودز حصريات فخمه خاصة تحديث</li>
-                        <li>دياثه محارم تجـ،ـسس كام حصري قوي</li>
-                        <li>اغتـ،ـصـ.ـاب حقيقي+تمثيل</li>
-                        <li>ورعـ،ـان مشاهير عرب + اجـ،ـنبي نيـ،ـك</li>
-                        <li>بنـ..ـات صغـ..ـار حصريات خاصة نيـ..ـك</li>
-                        <li>نيـ.ـك خليجي خالص من نخبة المقاطع المختارة الحصرية🟠🩷</li>
-                        <li>بنات ثانوي نودز + نـ.ـيك عربي جودة عالية</li>
-                        <li>تحديث مشاهير نيـ.ـك حصريه قويه 🩷</li>
-                    </ul>
-                    <div class="pricing">
-                        <div class="price-item">اشتراك شهر <span class="yellow">50 ﷼ = 15$</span></div>
-                        <div class="price-item">اشتراك دايم <span class="yellow">100 ﷼ = 30$</span></div>
-                    </div>
-                    <div class="payment-methods">💳 شحن سوا - موبايلي - بطايق لايك كارد - عملات رقمية</div>
-                    <a href="https://t.me/J3X5J3" class="subscribe-btn" target="_blank">للاشتراك تعال تلجرام</a>
-                    <div class="timer-note">⚠️ انتهت المدة التجريبية (60 ثانية)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- فيديو 3 -->
-    <div class="v-card" id="video-3">
-        <div class="v-info">
-            <span>📍 الأجزاء المحذوفة (VIP)</span>
-        </div>
-        <div class="video-container">
-            <video controls playsinline ontimeupdate="checkTime(this, 3)">
-                <source src="https://media.discordapp.net/attachments/1134630279034720356/1472886067396083813/VID_20260216_112311.mp4?ex=6994338b&is=6992e20b&hm=b2a0cf7a1a4262d3b81b06c7b813d23d1c48d3b60ead6e455a047635523e8661&" type="video/mp4">
-            </video>
-            <div class="subscription-overlay" id="overlay-3">
-                <div class="subscription-box">
-                    <div class="lock-icon">🔒</div>
-                    <div class="sub-header">اشتراك بكجات حصرية<span>😀🩵</span></div>
-                    <ul class="features-list">
-                        <li>حصريات خليجي وعربي</li>
-                        <li>اطـ،ـفـ.ـال مع امـ،ـهات</li>
-                        <li>اومي تيفي قواصر خليجات</li>
-                        <li>تجسس كاميرات منازل وفنادق</li>
-                        <li>نودز حصريات فخمه خاصة تحديث</li>
-                        <li>دياثه محارم تجـ،ـسس كام حصري قوي</li>
-                        <li>اغتـ،ـصـ.ـاب حقيقي+تمثيل</li>
-                        <li>ورعـ،ـان مشاهير عرب + اجـ،ـنبي نيـ،ـك</li>
-                        <li>بنـ..ـات صغـ..ـار حصريات خاصة نيـ..ـك</li>
-                        <li>نيـ.ـك خليجي خالص من نخبة المقاطع المختارة الحصرية🟠🩷</li>
-                        <li>بنات ثانوي نودز + نـ.ـيك عربي جودة عالية</li>
-                        <li>تحديث مشاهير نيـ.ـك حصريه قويه 🩷</li>
-                    </ul>
-                    <div class="pricing">
-                        <div class="price-item">اشتراك شهر <span class="yellow">50 ﷼ = 15$</span></div>
-                        <div class="price-item">اشتراك دايم <span class="yellow">100 ﷼ = 30$</span></div>
-                    </div>
-                    <div class="payment-methods">💳 شحن سوا - موبايلي - بطايق لايك كارد - عملات رقمية</div>
-                    <a href="https://t.me/J3X5J3" class="subscribe-btn" target="_blank">للاشتراك تعال تلجرام</a>
-                    <div class="timer-note">⚠️ انتهت المدة التجريبية (60 ثانية)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- فيديو 4 -->
-    <div class="v-card" id="video-4">
-        <div class="v-info">
-            <span>📍 حصري الهوامير 4K</span>
-        </div>
-        <div class="video-container">
-            <video controls playsinline ontimeupdate="checkTime(this, 4)">
-                <source src="https://media.discordapp.net/attachments/1134630279034720356/1472886226938888243/VID_20260216_112348.mp4?ex=699433b1&is=6992e231&hm=cdfe278624b14a7c82d589be3b5952223b242cb004c7c77eb864e2319052809d&" type="video/mp4">
-            </video>
-            <div class="subscription-overlay" id="overlay-4">
-                <div class="subscription-box">
-                    <div class="lock-icon">🔒</div>
-                    <div class="sub-header">اشتراك بكجات حصرية<span>😀🩵</span></div>
-                    <ul class="features-list">
-                        <li>حصريات خليجي وعربي</li>
-                        <li>اطـ،ـفـ.ـال مع امـ،ـهات</li>
-                        <li>اومي تيفي قواصر خليجات</li>
-                        <li>تجسس كاميرات منازل وفنادق</li>
-                        <li>نودز حصريات فخمه خاصة تحديث</li>
-                        <li>دياثه محارم تجـ،ـسس كام حصري قوي</li>
-                        <li>اغتـ،ـصـ.ـاب حقيقي+تمثيل</li>
-                        <li>ورعـ،ـان مشاهير عرب + اجـ،ـنبي نيـ،ـك</li>
-                        <li>بنـ..ـات صغـ..ـار حصريات خاصة نيـ..ـك</li>
-                        <li>نيـ.ـك خليجي خالص من نخبة المقاطع المختارة الحصرية🟠🩷</li>
-                        <li>بنات ثانوي نودز + نـ.ـيك عربي جودة عالية</li>
-                        <li>تحديث مشاهير نيـ.ـك حصريه قويه 🩷</li>
-                    </ul>
-                    <div class="pricing">
-                        <div class="price-item">اشتراك شهر <span class="yellow">50 ﷼ = 15$</span></div>
-                        <div class="price-item">اشتراك دايم <span class="yellow">100 ﷼ = 30$</span></div>
-                    </div>
-                    <div class="payment-methods">💳 شحن سوا - موبايلي - بطايق لايك كارد - عملات رقمية</div>
-                    <a href="https://t.me/J3X5J3" class="subscribe-btn" target="_blank">للاشتراك تعال تلجرام</a>
-                    <div class="timer-note">⚠️ انتهت المدة التجريبية (60 ثانية)</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="https://t.me/+vYk10FokzWgwMmY0" style="color: var(--tg-color); text-decoration: none; font-weight: bold;">مشاهدة المزيد على تلجرام ←</a>
-    </div>
-
-</div>
-
-<footer>
-    &copy; 2026 أرشيف الحصريات - جميع الحقوق محفوظة
-</footer>
-
-<script>
-    function checkTime(videoElement, videoId) {
-        // إذا تجاوز الوقت 60 ثانية ونحن لا نزال نشغل
-        if (videoElement.currentTime >= 60) {
-            // إيقاف الفيديو
-            videoElement.pause();
-            // إظهار الستارة
-            document.getElementById('overlay-' + videoId).classList.add('show');
-            // منع المستخدم من السحب للتقديم
-            videoElement.removeAttribute('controls');
-            // (اختياري) نعيد له عنصر التحكم ولكن مع الستارة لا يمكنه التشغيل
-        }
-    }
-
-    // يمكنك إضافة تعطيل السحب للأمام
-    document.querySelectorAll('video').forEach(video => {
-        video.addEventListener('seeking', function(e) {
-            if (this.currentTime >= 60) {
-                this.currentTime = 60; // يمنعه من التخطي إلى ما بعد 60 ثانية
-                this.pause();
-                // نحدد أي فيديو هذا بناءً على الأب
-                let parentCard = this.closest('.v-card');
-                if (parentCard) {
-                    let id = parentCard.id.split('-')[1];
-                    document.getElementById('overlay-' + id).classList.add('show');
-                    this.removeAttribute('controls');
-                }
-            }
-        });
-    });
-</script>
-
-</body>
-</html>
